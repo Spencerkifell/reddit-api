@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model bookmarked_comment {
+  comment_id Int
+  user_id    Int
+  comment    comment @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bookmarked_comment_comment")
+  user       user    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bookmarked_comment_user")
+
+  @@id([comment_id, user_id])
+  @@index([user_id], map: "fk_bookmarked_comment_user")
+}
+
+model bookmarked_post {
+  post_id Int
+  user_id Int
+  post    post @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bookmarked_post_post")
+  user    user @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bookmarked_post_user")
+
+  @@id([post_id, user_id])
+  @@index([user_id], map: "fk_bookmarked_post_user")
+}
+
+model category {
+  id                 Int                  @id @default(autoincrement())
+  user_id            Int?
+  title              String               @unique(map: "uq_category_title") @db.VarChar(100)
+  description        String?              @db.Text
+  created_at         DateTime             @default(now()) @db.DateTime(0)
+  edited_at          DateTime?            @db.DateTime(0)
+  deleted_at         DateTime?            @db.DateTime(0)
+  user               user?                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_user")
+  category_moderator category_moderator[]
+  post               post[]
+  subscription       subscription[]
+
+  @@index([user_id], map: "fk_category_user")
+}
+
+model category_moderator {
+  category_id Int
+  user_id     Int
+  category    category @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_moderator_category")
+  user        user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_moderator_user")
+
+  @@id([category_id, user_id])
+  @@index([user_id], map: "fk_category_moderator_user")
+}
+
+model comment {
+  id                 Int                  @id @default(autoincrement())
+  post_id            Int
+  user_id            Int?
+  reply_id           Int?
+  content            String               @db.Text
+  created_at         DateTime             @default(now()) @db.DateTime(0)
+  edited_at          DateTime?            @db.DateTime(0)
+  deleted_at         DateTime?            @db.DateTime(0)
+  post               post                 @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_post")
+  comment            comment?             @relation("commentTocomment_reply_id", fields: [reply_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_comment_reply")
+  user               user?                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_user")
+  bookmarked_comment bookmarked_comment[]
+  other_comment      comment[]            @relation("commentTocomment_reply_id")
+  comment_vote       comment_vote[]
+
+  @@index([post_id], map: "fk_comment_post")
+  @@index([reply_id], map: "fk_comment_reply")
+  @@index([user_id], map: "fk_comment_user")
+}
+
+model comment_vote {
+  user_id    Int
+  comment_id Int
+  type       comment_vote_type
+  comment    comment           @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_vote_comment")
+  user       user              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_vote_user")
+
+  @@id([user_id, comment_id])
+  @@index([comment_id], map: "fk_comment_vote_comment")
+}
+
+model post {
+  id              Int               @id @default(autoincrement())
+  user_id         Int?
+  category_id     Int
+  title           String            @unique(map: "uq_post_title") @db.VarChar(100)
+  type            post_type
+  content         String            @db.Text
+  created_at      DateTime          @default(now()) @db.DateTime(0)
+  edited_at       DateTime?         @db.DateTime(0)
+  deleted_at      DateTime?         @db.DateTime(0)
+  category        category          @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_post_category")
+  user            user?             @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_post_user")
+  bookmarked_post bookmarked_post[]
+  comment         comment[]
+  post_vote       post_vote[]
+
+  @@index([category_id], map: "fk_post_category")
+  @@index([user_id], map: "fk_post_user")
+}
+
+model post_vote {
+  user_id Int
+  post_id Int
+  type    post_vote_type
+  post    post           @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_post_vote_post")
+  user    user           @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_post_vote_user")
+
+  @@id([user_id, post_id])
+  @@index([post_id], map: "fk_post_vote_post")
+}
+
+model subscription {
+  category_id Int
+  user_id     Int
+  category    category @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_subscription_category")
+  user        user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_subscription_user")
+
+  @@id([category_id, user_id])
+  @@index([user_id], map: "fk_subscription_user")
+}
+
+model user {
+  id                 Int                  @id @default(autoincrement())
+  username           String               @unique(map: "uq_user_username") @db.VarChar(100)
+  email              String               @unique(map: "uq_user_email") @db.VarChar(100)
+  password           String               @db.VarChar(100)
+  avatar             String?              @db.VarChar(1000)
+  created_at         DateTime             @default(now()) @db.DateTime(0)
+  edited_at          DateTime?            @db.DateTime(0)
+  deleted_at         DateTime?            @db.DateTime(0)
+  bookmarked_comment bookmarked_comment[]
+  bookmarked_post    bookmarked_post[]
+  category           category[]
+  category_moderator category_moderator[]
+  comment            comment[]
+  comment_vote       comment_vote[]
+  post               post[]
+  post_vote          post_vote[]
+  subscription       subscription[]
+}
+
+enum comment_vote_type {
+  Up
+  Down
+}
+
+enum post_type {
+  URL
+  Text
+}
+
+enum post_vote_type {
+  Up
+  Down
+}

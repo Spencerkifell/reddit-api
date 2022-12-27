@@ -1,0 +1,3017 @@
+{
+	"info": {
+		"_postman_id": "61bd1365-4f50-460f-83a2-65c84d371b68",
+		"name": "User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"username\", userName)",
+									"pm.collectionVariables.set(\"email\", email)",
+									"pm.collectionVariables.set(\"password\", Date.now().toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User created successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"User password is hashed\", function () {",
+									"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"password\"));",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Duplicate Username)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": \"object\"",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let name = responseData.name;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot create User: Duplicate username.\");",
+									"});",
+									"",
+									"pm.test(\"Reponse contains correct exception name\", function () {",
+									"    pm.expect(name).to.eql(\"UserException\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Duplicate Email)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"",
+									"pm.collectionVariables.set(\"username\", userName)",
+									"pm.collectionVariables.set(\"password\", Date.now().toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": \"object\"",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let name = responseData.name;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot create User: Duplicate email.\");",
+									"});",
+									"",
+									"pm.test(\"Reponse contains correct exception name\", function () {",
+									"    pm.expect(name).to.eql(\"UserException\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Missing Email)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"username\", userName)",
+									"pm.collectionVariables.set(\"email\", \"\")",
+									"pm.collectionVariables.set(\"password\", Date.now().toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": \"object\"",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let name = responseData.name;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot create User: Missing email.\");",
+									"});",
+									"",
+									"pm.test(\"Reponse contains correct exception name\", function () {",
+									"    pm.expect(name).to.eql(\"UserException\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Missing Username)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"username\", \"\")",
+									"pm.collectionVariables.set(\"email\", email)",
+									"pm.collectionVariables.set(\"password\", Date.now().toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": \"object\"",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let name = responseData.name;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot create User: Missing username.\");",
+									"});",
+									"",
+									"pm.test(\"Reponse contains correct exception name\", function () {",
+									"    pm.expect(name).to.eql(\"UserException\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Missing Password)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"username\", userName)",
+									"pm.collectionVariables.set(\"email\", email)",
+									"pm.collectionVariables.set(\"password\", \"\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": \"object\"",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let name = responseData.name;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot create User: Missing password.\");",
+									"});",
+									"",
+									"pm.test(\"Reponse contains correct exception name\", function () {",
+									"    pm.expect(name).to.eql(\"UserException\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Missing All Fields)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"username\", \"\")",
+									"pm.collectionVariables.set(\"email\", \"\")",
+									"pm.collectionVariables.set(\"password\", \"\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": \"object\"",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let name = responseData.name;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot create User: Missing required fields.\");",
+									"});",
+									"",
+									"pm.test(\"Reponse contains correct exception name\", function () {",
+									"    pm.expect(name).to.eql(\"UserException\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Modify User",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"username\", userName)",
+									"pm.collectionVariables.set(\"email\", email)",
+									"pm.collectionVariables.set(\"password\", Date.now().toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User created successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"User password is hashed\", function () {",
+									"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"password\"));",
+									"})",
+									"",
+									"// For modifying the user with a specific id (dynamically...)",
+									"pm.collectionVariables.set(\"id\", user.id)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User (Auth)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User logged in successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"User has received an auth token\", function () {",
+									"    pm.expect(pm.cookies.has(\"token\")).to.be.true;",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"auth",
+								"login"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Username)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"",
+									"pm.collectionVariables.set(\"oldUsername\", pm.collectionVariables.get(\"username\"))",
+									"pm.collectionVariables.set(\"username\", userName)",
+									"",
+									"let id = pm.collectionVariables.get(\"id\")"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"console.log(message)",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User updated successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"User password is hashed\", function () {",
+									"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"password\"));",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Missing Username)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let errorType = responseData.name;",
+									"",
+									"pm.test(\"Response contains correct error type\", function () {",
+									"    pm.expect(errorType).to.eql(\"UserException\")",
+									"})",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot update User: Missing username.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Email)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"oldEmail\", pm.collectionVariables.get(\"email\"))",
+									"pm.collectionVariables.set(\"email\", email)",
+									"",
+									"let id = pm.collectionVariables.get(\"id\")"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User updated successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"User password is hashed\", function () {",
+									"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"password\"));",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Missing Email)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let errorType = responseData.name;",
+									"",
+									"pm.test(\"Response contains correct error type\", function () {",
+									"    pm.expect(errorType).to.eql(\"UserException\")",
+									"})",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot update User: Missing email.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Password)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"oldPassword\", pm.collectionVariables.get(\"password\"))",
+									"pm.collectionVariables.set(\"password\", Date.now().toString())",
+									"",
+									"let id = pm.collectionVariables.get(\"id\")"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User updated successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"Password not equal to previous password\", function () {",
+									"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"oldPassword\"));",
+									"})",
+									"",
+									"pm.test(\"User password is hashed\", function () {",
+									"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"password\"));",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Missing Password)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"let errorType = responseData.name;",
+									"",
+									"pm.test(\"Response contains correct error type\", function () {",
+									"    pm.expect(errorType).to.eql(\"UserException\")",
+									"})",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot update User: Missing password.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Reference User)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"usernameAlt\", userName)",
+									"pm.collectionVariables.set(\"emailAlt\", email)",
+									"pm.collectionVariables.set(\"passwordAlt\", Date.now().toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User created successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"usernameAlt\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"emailAlt\"));",
+									"});",
+									"",
+									"pm.test(\"User password is hashed\", function () {",
+									"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"passwordAlt\"));",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{usernameAlt}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{passwordAlt}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{emailAlt}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Duplicate Username)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let id = pm.collectionVariables.get(\"id\")"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": {}",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot update User: Duplicate username.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{usernameAlt}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Duplicate Email)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let id = pm.collectionVariables.get(\"id\")"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": {}",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot update User: Duplicate email.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{emailAlt}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (Another User)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": {}",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"let errorType = responseData.name;",
+									"",
+									"pm.test(\"Response contains correct error type\", function () {",
+									"    pm.expect(errorType).to.eql(\"AuthException\")",
+									"})",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot update User: You are unable to modify a user other than yourself\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{emailAlt}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/99",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"99"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout User (Auth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {}",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User logged out successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has been logged out\", function () {",
+									"    pm.expect(pm.cookies.has(\"token\")).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5002/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User (No Auth)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"name\": \"string\",",
+									"    \"message\": \"string\",",
+									"    \"payload\": {}",
+									"}",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"let errorType = responseData.name;",
+									"",
+									"pm.test(\"Response contains correct error type\", function () {",
+									"    pm.expect(errorType).to.eql(\"AuthException\")",
+									"})",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"Cannot update User: User not currently logged in\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{emailAlt}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user/99",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user",
+								"99"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete User",
+			"item": [
+				{
+					"name": "Delete Self",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+											"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+											"",
+											"pm.collectionVariables.set(\"username\", userName)",
+											"pm.collectionVariables.set(\"email\", email)",
+											"pm.collectionVariables.set(\"password\", Date.now().toString());"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"message\": \"string\",",
+											"    \"payload\": {",
+											"        \"user\": {",
+											"            \"id\": \"number\",",
+											"            \"username\": \"string\",",
+											"            \"password\": \"string\",",
+											"            \"avatar\": \"string\",",
+											"            \"created_at\": \"string\",",
+											"            \"edited_at\": \"string\",",
+											"            \"deleted_at\": \"string\"",
+											"        }",
+											"    }",
+											"}",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let user = payload.user;",
+											"let message = responseData.message;",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"User created successfully!\");",
+											"});",
+											"",
+											"pm.test(\"User has correct username\", function () {",
+											"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+											"});",
+											"",
+											"pm.test(\"User has correct email\", function () {",
+											"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+											"});",
+											"",
+											"pm.test(\"User password is hashed\", function () {",
+											"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"password\"));",
+											"})",
+											"",
+											"// For modifying the user with a specific id (dynamically...)",
+											"pm.collectionVariables.set(\"id\", user.id)"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "default"
+										},
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "default"
+										},
+										{
+											"key": "email",
+											"value": "{{email}}",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5002/user",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login User (Auth)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"message\": \"string\",",
+											"    \"payload\": {",
+											"        \"user\": {",
+											"            \"id\": \"number\",",
+											"            \"username\": \"string\",",
+											"            \"password\": \"string\",",
+											"            \"avatar\": \"string\",",
+											"            \"created_at\": \"string\",",
+											"            \"edited_at\": \"string\",",
+											"            \"deleted_at\": \"string\"",
+											"        }",
+											"    }",
+											"}",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let user = payload.user;",
+											"let message = responseData.message;",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"User logged in successfully!\");",
+											"});",
+											"",
+											"pm.test(\"User has correct username\", function () {",
+											"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+											"});",
+											"",
+											"pm.test(\"User has correct email\", function () {",
+											"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+											"});",
+											"",
+											"pm.test(\"User has received an auth token\", function () {",
+											"    pm.expect(pm.cookies.has(\"token\")).to.be.true;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "default"
+										},
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5002/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"auth",
+										"login"
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"disabled": true
+										},
+										{
+											"key": "password",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let id = pm.collectionVariables.get(\"id\")"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"message\": \"string\",",
+											"    \"payload\": {",
+											"        \"user\": {",
+											"            \"id\": \"number\",",
+											"            \"username\": \"string\",",
+											"            \"password\": \"string\",",
+											"            \"avatar\": \"string\",",
+											"            \"created_at\": \"string\",",
+											"            \"edited_at\": \"string\",",
+											"            \"deleted_at\": \"string\"",
+											"        }",
+											"    }",
+											"}",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let user = payload.user;",
+											"let message = responseData.message;",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"User deleted successfully!\");",
+											"});",
+											"",
+											"pm.test(\"User has been logged out\", function () {",
+											"    pm.expect(pm.cookies.has(\"token\")).to.be.false;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5002/user/{{id}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"user",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Failed Login User (Auth)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"name\": \"string\",",
+											"    \"message\": \"string\",",
+											"    \"payload\": {}",
+											"}",
+											"",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let user = payload.user;",
+											"let message = responseData.message;",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"Cannot login: User has been deleted\");",
+											"});",
+											"",
+											"pm.test(\"User has not received an auth token\", function () {",
+											"    pm.expect(pm.cookies.has(\"token\")).to.be.false;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "default"
+										},
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5002/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"auth",
+										"login"
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"disabled": true
+										},
+										{
+											"key": "password",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete Other User",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+											"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+											"",
+											"pm.collectionVariables.set(\"username\", userName)",
+											"pm.collectionVariables.set(\"email\", email)",
+											"pm.collectionVariables.set(\"password\", Date.now().toString());"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"message\": \"string\",",
+											"    \"payload\": {",
+											"        \"user\": {",
+											"            \"id\": \"number\",",
+											"            \"username\": \"string\",",
+											"            \"password\": \"string\",",
+											"            \"avatar\": \"string\",",
+											"            \"created_at\": \"string\",",
+											"            \"edited_at\": \"string\",",
+											"            \"deleted_at\": \"string\"",
+											"        }",
+											"    }",
+											"}",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let user = payload.user;",
+											"let message = responseData.message;",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"User created successfully!\");",
+											"});",
+											"",
+											"pm.test(\"User has correct username\", function () {",
+											"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+											"});",
+											"",
+											"pm.test(\"User has correct email\", function () {",
+											"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+											"});",
+											"",
+											"pm.test(\"User password is hashed\", function () {",
+											"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"password\"));",
+											"})",
+											"",
+											"// For modifying the user with a specific id (dynamically...)",
+											"pm.collectionVariables.set(\"id\", user.id)"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "default"
+										},
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "default"
+										},
+										{
+											"key": "email",
+											"value": "{{email}}",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5002/user",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login User (Auth)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"message\": \"string\",",
+											"    \"payload\": {",
+											"        \"user\": {",
+											"            \"id\": \"number\",",
+											"            \"username\": \"string\",",
+											"            \"password\": \"string\",",
+											"            \"avatar\": \"string\",",
+											"            \"created_at\": \"string\",",
+											"            \"edited_at\": \"string\",",
+											"            \"deleted_at\": \"string\"",
+											"        }",
+											"    }",
+											"}",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let user = payload.user;",
+											"let message = responseData.message;",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"User logged in successfully!\");",
+											"});",
+											"",
+											"pm.test(\"User has correct username\", function () {",
+											"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+											"});",
+											"",
+											"pm.test(\"User has correct email\", function () {",
+											"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+											"});",
+											"",
+											"pm.test(\"User has received an auth token\", function () {",
+											"    pm.expect(pm.cookies.has(\"token\")).to.be.true;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "default"
+										},
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5002/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"auth",
+										"login"
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"disabled": true
+										},
+										{
+											"key": "password",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User (Cannot Delete User Other Than Self)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let id = pm.collectionVariables.get(\"id\")"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"message\": \"string\",",
+											"    \"payload\": {}",
+											"}",
+											"",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let message = responseData.message;",
+											"let errorName = responseData.name;",
+											"",
+											"pm.test(\"Response contains correct error name\", function () {",
+											"    pm.expect(errorName).to.eql(\"AuthException\");",
+											"});",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"Cannot delete User: You are unable to delete a user other than yourself\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5002/user/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"user",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout User (Auth)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"message\": \"string\",",
+											"    \"payload\": {}",
+											"}",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let message = responseData.message;",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"User logged out successfully!\");",
+											"});",
+											"",
+											"pm.test(\"User has been logged out\", function () {",
+											"    pm.expect(pm.cookies.has(\"token\")).to.be.false;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5002/auth/logout",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User (Not Logged In)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let id = pm.collectionVariables.get(\"id\")"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"    \"message\": \"string\",",
+											"    \"payload\": {}",
+											"}",
+											"",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Response contains correct schema\", function () {",
+											"    pm.response.to.have.jsonSchema(schema)",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"let payload = responseData.payload;",
+											"let message = responseData.message;",
+											"let errorName = responseData.name;",
+											"",
+											"pm.test(\"Response contains correct error name\", function () {",
+											"    pm.expect(errorName).to.eql(\"AuthException\");",
+											"});",
+											"",
+											"pm.test(\"Reponse contains correct message\", function () {",
+											"    pm.expect(message).to.eql(\"Cannot delete User: User not currently logged in\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5002/user/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"user",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Create User (Auth)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")",
+									"let email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.collectionVariables.set(\"username\", userName)",
+									"pm.collectionVariables.set(\"email\", email)",
+									"pm.collectionVariables.set(\"password\", Date.now().toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User created successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"User password is hashed\", function () {",
+									"    pm.expect(user.password).not.to.eql(pm.collectionVariables.get(\"password\"));",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User (Auth)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {",
+									"        \"user\": {",
+									"            \"id\": \"number\",",
+									"            \"username\": \"string\",",
+									"            \"password\": \"string\",",
+									"            \"avatar\": \"string\",",
+									"            \"created_at\": \"string\",",
+									"            \"edited_at\": \"string\",",
+									"            \"deleted_at\": \"string\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let user = payload.user;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User logged in successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has correct username\", function () {",
+									"    pm.expect(user.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"User has correct email\", function () {",
+									"    pm.expect(user.email).to.eql(pm.collectionVariables.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"User has received an auth token\", function () {",
+									"    pm.expect(pm.cookies.has(\"token\")).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5002/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"auth",
+								"login"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout User (Auth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"    \"message\": \"string\",",
+									"    \"payload\": {}",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains correct schema\", function () {",
+									"    pm.response.to.have.jsonSchema(schema)",
+									"});",
+									"",
+									"let responseData = pm.response.json();",
+									"let payload = responseData.payload;",
+									"let message = responseData.message;",
+									"",
+									"pm.test(\"Reponse contains correct message\", function () {",
+									"    pm.expect(message).to.eql(\"User logged out successfully!\");",
+									"});",
+									"",
+									"pm.test(\"User has been logged out\", function () {",
+									"    pm.expect(pm.cookies.has(\"token\")).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5002/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "email",
+			"value": ""
+		},
+		{
+			"key": "password",
+			"value": ""
+		},
+		{
+			"key": "id",
+			"value": ""
+		},
+		{
+			"key": "oldUsername",
+			"value": ""
+		},
+		{
+			"key": "oldEmail",
+			"value": ""
+		},
+		{
+			"key": "oldPassword",
+			"value": ""
+		},
+		{
+			"key": "usernameAlt",
+			"value": ""
+		},
+		{
+			"key": "emailAlt",
+			"value": ""
+		},
+		{
+			"key": "passwordAlt",
+			"value": ""
+		}
+	]
+}
