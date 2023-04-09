@@ -67,6 +67,15 @@ class PostRepository extends Repository {
             return await this.model.findMany({
                 where: {
                     category_id: category_id
+                },
+                include: {
+                    user: {
+                        select: {
+                            username: true,
+                            avatar: true
+                        }
+                    },
+                    category: true
                 }
             });
         } catch (error) {
