@@ -25,6 +25,24 @@ router.get("/", async (req: any, res: any) => {
         });
 });
 
+router.get("/category/:id", async (req: any, res: any) => {
+    const id = parseInt(req.params.id);
+    if(isValidId(id))
+        return generateError(res, new PostException(`Cannot retrieve Posts: Invalid Category ID.`), 400);
+
+    try {
+        var posts: post[] = await postRepository.getAllByCategory(id);
+        return res.data = res.json({
+            message: "Posts retrieved successfully!",
+            payload: {
+                posts: posts
+            }
+        });
+    } catch (err: any) {
+        return generateError(res, err, 400);
+    }
+});
+
 router.post("/", async (req: any, res: any) => {
     let postData = req.body;
 

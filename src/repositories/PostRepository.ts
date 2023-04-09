@@ -62,6 +62,20 @@ class PostRepository extends Repository {
         }
     }
 
+    async getAllByCategory(category_id: number){
+        try {
+            return await this.model.findMany({
+                where: {
+                    category_id: category_id
+                }
+            });
+        } catch (error) {
+            throw error;
+        } finally {
+            prisma.$disconnect();
+        }
+    }
+
     async update(id: number, data: any){
         const { content, type } = data;
 
