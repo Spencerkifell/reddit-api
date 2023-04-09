@@ -28,14 +28,15 @@ router.post("/login", async (req: any, res: any) => {
 
         const token = signToken({id: user.id, username: user.username});
 
-        res.cookie("token", token, {
-            httpOnly: true,
-        });
+        // res.cookie("token", token, {
+        //     httpOnly: true,
+        // });
 
         return res.data = res.json({
             message: "User logged in successfully!",
             payload: {
                 user: user,
+                token: token
             }
         });
     } catch (err: any) {
